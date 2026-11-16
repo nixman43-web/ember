@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=386d6e05-6aec-4519-acc4-86b1096d1b36
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMBER | Fire-Roasted Gastronomy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a0908;
+            --text-main: #f4f4f0;
+            --text-muted: #8a817c;
+            --accent-flame: #d95c14;
+            --border-color: rgba(244, 244, 240, 0.1);
+            --ease: cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        @keyframes fadeInMobile {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Keep system cursor by default; hide only when custom cursor is confirmed active */
+        body.custom-cursor-active,
+        body.custom-cursor-active * {
+            cursor: none;
+        }
+
+        .text-fallback {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-main);
+            letter-spacing: 0.01em;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 10px;
+        }
+
+        #cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 12px;
+            height: 12px;
+            background-color: var(--accent-flame);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s var(--ease), height 0.3s var(--ease), background-color 0.3s var(--ease);
+            mix-blend-mode: screen;
+            box-shadow: 0 0 15px rgba(217, 92, 20, 0.5);
+        }
+
+        #cursor.active {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(244, 244, 240, 0.1);
+            border: 1px solid var(--text-main);
+            box-shadow: none;
+            mix-blend-mode: normal;
+        }
+
+        .layout {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .pane-left {
+            width: 45vw;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .dynamic-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background-color: #050505;
+        }
+
+        .bg-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transform: scale(1.05);
+            transition: opacity 1.2s var(--ease), transform 1.5s var(--ease);
+        }
+
+        .bg-img.active {
+            opacity: 0.4; 
+            transform: scale(1);
+        }
+
+        .brand-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.1;
+            word-spacing: 0.1em;
+        }
+
+        .brand-logo span {
+            color: var(--accent-flame);
+        }
+
+        .brand-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tagline {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(0.875rem, 2vw, 1.125rem);
+            font-style: italic;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            width: fit-content;
+        }
+
+        .nav-link:hover, .nav-link.active-link {
+            color: var(--text-main);
+        }
+
+        .footer-info {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .pane-right {
+            width: 55vw;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        section {
+            padding: 8rem 5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-header {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.75rem, 5vw, 3rem);
+            margin-bottom: clamp(1.5rem, 4vw, 4rem);
+            font-weight: 400;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        #intro-text-container {
+            position: relative;
+            width: 100%;
+            min-height: 200px;
+            max-width: 65ch;
+            margin: 0 auto;
+        }
+
+        #text-canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .blog-text-container {
+            position: relative;
+            width: 100%;
+            min-height: 100px;
+            margin-bottom: 2rem;
+        }
+
+        .blog-text-canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4rem;
+        }
+
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .menu-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+        }
+
+        .menu-price {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: var(--accent-flame);
+        }
+
+        .menu-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            max-width: 80%;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 5rem;
+        }
+
+        .blog-post {
+            position: relative;
+        }
+
+        .blog-img-wrapper {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            background: #111;
+        }
+
+        .blog-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(80%);
+            transition: filter 0.5s ease, transform 0.8s var(--ease);
+        }
+
+        .blog-post:hover .blog-img-wrapper img {
+            filter: grayscale(0%);
+            transform: scale(1.05);
+        }
+
+        .blog-meta {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-flame);
+            margin-bottom: 1rem;
+        }
+
+        .blog-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .blog-excerpt {
+            font-size: 1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .read-more {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-main);
+            text-decoration: none;
+            border-bottom: 1px solid var(--accent-flame);
+            padding-bottom: 0.2rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .pane-left { 
+                width: 100vw; 
+                height: auto;
+                min-height: 40vh;
+                padding: 1.5rem;
+                border-right: none; 
+                border-bottom: 1px solid var(--border-color);
+                align-items: center;
+            }
+            .pane-right { width: 100vw; height: 60vh; }
+            section { padding: 3rem 1.5rem; }
+            .bg-img.active { opacity: 0.3; }
+            .brand-logo { font-size: clamp(2.5rem, 10vw, 4rem); }
+            .section-header { font-size: clamp(1.5rem, 4vw, 2rem); }
+        }
+
+        @media (max-width: 768px) {
+            .layout { flex-direction: column; }
+            .pane-left {
+                width: 100vw;
+                height: auto;
+                min-height: 25vh;
+                max-height: 35vh;
+                padding: 1rem;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.3rem;
+                overflow: hidden;
+                position: relative;
+            }
+            .dynamic-bg {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+            }
+            .bg-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                opacity: 0;
+                transform: scale(1.1);
+                transition: opacity 1.2s var(--ease), transform 1.5s var(--ease);
+            }
+            .bg-img.active {
+                opacity: 0.35;
+                transform: scale(1);
+            }
+            .brand-container, .nav-menu, .footer-info {
+                animation: fadeInMobile 1s ease forwards;
+                opacity: 0;
+            }
+            .nav-menu { animation-delay: 0.2s; }
+            .footer-info { animation-delay: 0.4s; }
+            .pane-right {
+                width: 100vw;
+                height: 70vh;
+                overflow-y: auto;
+            }
+            section {
+                padding: 1.5rem 1rem;
+            }
+            .brand-logo {
+                font-size: clamp(2rem, 10vw, 3rem);
+                letter-spacing: 0.02em;
+            }
+            .brand-container {
+                gap: 0.15rem;
+            }
+            .tagline {
+                font-size: 0.7rem;
+                margin-top: 0.15rem;
+            }
+            .nav-menu {
+                gap: 0.25rem;
+                align-items: center;
+            }
+            .nav-link {
+                font-size: 0.6rem;
+                letter-spacing: 0.12em;
+            }
+            .footer-info {
+                font-size: 0.5rem;
+                text-align: center;
+                margin-top: 0.15rem;
+            }
+            .section-header {
+                font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+                margin-bottom: 0.75rem;
+                opacity: 0;
+                animation: fadeInMobile 1s ease forwards;
+                animation-delay: 0.1s;
+            }
+            #intro-text-container {
+                max-width: 100%;
+                padding: 0 0.5rem;
+                opacity: 0;
+                animation: fadeInMobile 1s ease forwards;
+                animation-delay: 0.25s;
+            }
+            .menu-item {
+                opacity: 0;
+                animation: fadeInMobile 1s ease forwards;
+            }
+            .menu-item:nth-child(1) { animation-delay: 0.15s; }
+            .menu-item:nth-child(2) { animation-delay: 0.25s; }
+            .menu-item:nth-child(3) { animation-delay: 0.35s; }
+            .menu-item:nth-child(4) { animation-delay: 0.45s; }
+            .blog-post {
+                opacity: 0;
+                animation: fadeInMobile 1s ease forwards;
+            }
+            .blog-post:nth-child(1) { animation-delay: 0.2s; }
+            .blog-post:nth-child(2) { animation-delay: 0.4s; }
+            #cursor {
+                display: none;
+            }
+            .blog-img-wrapper {
+                height: 150px;
+            }
+            .blog-title {
+                font-size: 1.4rem;
+            }
+            .menu-grid {
+                gap: 1.5rem;
+            }
+            .menu-title {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+
+    <div class="layout">
+        
+        <div class="pane-left">
+            <div class="dynamic-bg">
+                <img src="https://images.unsplash.com/photo-1475070929565-c985b496cb9f?auto=format&fit=crop&q=80&w=1600" class="bg-img active" data-img="intro" alt="Dark fire sparks">
+                <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=1600" class="bg-img" data-img="menu" alt="Grilling meat">
+                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=1600" class="bg-img" data-img="journal" alt="Roasted Steak">
+            </div>
+
+            <div class="brand-container">
+                <div class="brand-logo">EMBER<span>.</span></div>
+                <div class="tagline">Wood, Fire, Time.</div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#intro" class="nav-link interactive active-link">Philosophy</a>
+                <a href="#menu" class="nav-link interactive">The Roast</a>
+                <a href="#journal" class="nav-link interactive">Dispatches</a>
+            </nav>
+
+            <div class="footer-info">
+                1200 Ash Street, NY<br>
+                Reservations highly recommended.<br>
+                info@ember-roast.com
+            </div>
+        </div>
+
+        <div class="pane-right" id="scroll-pane">
+            
+            <section id="intro" class="observe-section">
+                <h2 class="section-header">The Discipline of Fire.</h2>
+                <div id="intro-text-container">
+                    <canvas id="text-canvas"></canvas>
+                    <p class="text-fallback">We don't cook. We control decomposition through heat. At Ember, we rely exclusively on open wood fires. No gas. No electric ovens. We source seasoned hickory, white oak, and cherry wood, reducing them to glowing coals before they ever touch our ingredients. The ash is our seasoning; the smoke is our sauce. Welcome to the hearth.</p>
+                </div>
+            </section>
+
+            <section id="menu" class="observe-section">
+                <h2 class="section-header">The Roast</h2>
+                <div class="menu-grid">
+                    
+                    <div class="menu-item interactive">
+                        <div class="menu-header">
+                            <span class="menu-title">Heritage Pork Belly</span>
+                            <span class="menu-price">$42</span>
+                        </div>
+                        <p class="menu-desc">Slow-roasted over cherry wood for 14 hours. Served with charred fennel, fermented apple cider glaze, and crackling.</p>
+                    </div>
+
+                    <div class="menu-item interactive">
+                        <div class="menu-header">
+                            <span class="menu-title">Ash-Baked Dry Aged Ribeye</span>
+                            <span class="menu-price">$85</span>
+                        </div>
+                        <p class="menu-desc">45-day dry-aged cut, buried in white oak embers. Rendered bone marrow butter, smoked sea salt.</p>
+                    </div>
+
+                    <div class="menu-item interactive">
+                        <div class="menu-header">
+                            <span class="menu-title">Coal-Roasted Heirloom Carrots</span>
+                            <span class="menu-price">$24</span>
+                        </div>
+                        <p class="menu-desc">Cooked directly on the coals until blackened. Whipped smoked labneh, pistachio dukkah, hot honey.</p>
+                    </div>
+
+                    <div class="menu-item interactive">
+                        <div class="menu-header">
+                            <span class="menu-title">Smoked Venison Tartare</span>
+                            <span class="menu-price">$36</span>
+                        </div>
+                        <p class="menu-desc">Cold-smoked under a cloche of hickory vapor. Cured egg yolk, black garlic emulsion, sourdough crisps.</p>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="journal" class="observe-section">
+                <h2 class="section-header">Dispatches</h2>
+                <div class="blog-grid">
+                    
+                    <article class="blog-post">
+                        <div class="blog-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=1200" alt="Wood fire">
+                        </div>
+                        <div class="blog-meta">Vol. 01 — Sourcing</div>
+                        <h3 class="blog-title">Why We Burn Hickory</h3>
+                        <div class="blog-text-container">
+                            <canvas class="blog-text-canvas"></canvas>
+                            <p class="text-fallback">Not all smoke is created equal. The resin content of a tree dictates the bitterness of the exhaust. We traveled through three states to find the specific strain of hickory that provides a sweet, slow-burning ember without leaving an acrid film on the palate.</p>
+                        </div>
+                        <a href="#" class="read-more interactive">Read Entry</a>
+                    </article>
+
+                    <article class="blog-post">
+                        <div class="blog-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=1200" alt="Meat on grill">
+                        </div>
+                        <div class="blog-meta">Vol. 02 — Technique</div>
+                        <h3 class="blog-title">The Anatomy of a Crust</h3>
+                        <div class="blog-text-container">
+                            <canvas class="blog-text-canvas"></canvas>
+                            <p class="text-fallback">The Maillard reaction is science; the perfect crust is an art. It requires managing the micro-climate directly above the coals. Move the meat a fraction of an inch too low, and you burn the proteins. Too high, and you boil them. Here is how we build the perfect sear.</p>
+                        </div>
+                        <a href="#" class="read-more interactive">Read Entry</a>
+                    </article>
+
+                </div>
+            </section>
+            
+            <div style="height: 50vh;"></div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        // === Orange Cursor + Fume Particles + Pretext Text (all sections) ===
+        
+        // Text content for each section
+        const introText = `We don't cook. We control decomposition through heat. At Ember, we rely exclusively on open wood fires. No gas. No electric ovens. We source seasoned hickory, white oak, and cherry wood, reducing them to glowing coals before they ever touch our ingredients. The ash is our seasoning; the smoke is our sauce. Welcome to the hearth.`;
+        
+        const blogTexts = [
+            `Not all smoke is created equal. The resin content of a tree dictates the bitterness of the exhaust. We traveled through three states to find the specific strain of hickory that provides a sweet, slow-burning ember without leaving an acrid film on the palate.`,
+            `The Maillard reaction is science; the perfect crust is an art. It requires managing the micro-climate directly above the coals. Move the meat a fraction of an inch too low, and you burn the proteins. Too high, and you boil them. Here is how we build the perfect sear.`
+        ];
+
+        let pretextPrepareWithSegments;
+        let pretextLayoutNextLine;
+
+const FONT_SIZE = 18;
+        const FONT_FAMILY = 'Inter';
+        const TEXT_FONT = `300 ${FONT_SIZE}px ${FONT_FAMILY}`;
+        const LINE_HEIGHT = 30;
+        const PADDING = 0;
+        const SMOKE_REPULSION_RADIUS = 35;
+
+        function getResponsiveFontSize() {
+            const baseSize = 18;
+            const vw = window.innerWidth;
+            if (vw < 768) return baseSize * 1.35;
+            if (vw < 900) return baseSize * 0.95;
+            return baseSize;
+        }
+
+        function getResponsiveLineHeight() {
+            const baseLineHeight = 30;
+            const vw = window.innerWidth;
+            if (vw < 768) return baseLineHeight * 1.15;
+            if (vw < 900) return baseLineHeight * 0.9;
+            return baseLineHeight;
+        }
+
+        function getResponsiveSmokeRadius() {
+            const baseRadius = 35;
+            const vw = window.innerWidth;
+            if (vw < 768) return baseRadius * 0.6;
+            if (vw < 900) return baseRadius * 0.75;
+            return baseRadius;
+        }
+
+        class FumeParticle {
+            constructor(x, y) {
+                this.x = x + (Math.random() * 20 - 10);
+                this.y = y + (Math.random() * 20 - 10);
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = -(Math.random() * 0.6 + 0.2);
+                this.radius = Math.random() * 15 + 10;
+                this.life = 1;
+                this.decay = Math.random() * 0.005 + 0.003;
+            }
+
+            update(wakeVx, wakeVy) {
+                this.vx += wakeVx * 0.02;
+                this.vy += wakeVy * 0.02;
+                this.vx *= 0.95;
+                this.vy *= 0.95;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.radius += 0.4;
+                this.life -= this.decay;
+            }
+
+            draw(ctx) {
+                if (this.life <= 0) return;
+                const alpha = Math.max(0, this.life * 0.04);
+
+                ctx.beginPath();
+                const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                grad.addColorStop(0, `rgba(217, 92, 20, ${alpha})`);
+                grad.addColorStop(0.5, `rgba(217, 92, 20, ${alpha * 0.3})`);
+                grad.addColorStop(1, `rgba(217, 92, 20, 0)`);
+
+                ctx.fillStyle = grad;
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        let particles = [];
+        const mouse = { x: -1000, y: -1000, targetX: window.innerWidth/2, targetY: window.innerHeight/2 };
+        let lastMouse = { x: -1000, y: -1000 };
+        const mouseVelocity = { x: 0, y: 0 };
+
+        window.addEventListener('mousemove', (e) => {
+            const prevX = mouse.targetX;
+            const prevY = mouse.targetY;
+            
+            mouse.targetX = e.clientX;
+            mouse.targetY = e.clientY;
+            mouseVelocity.x = mouse.targetX - prevX;
+            mouseVelocity.y = mouse.targetY - prevY;
+
+            const distMoved = Math.hypot(e.clientX - lastMouse.x, e.clientY - lastMouse.y);
+            const spawnCount = Math.min(Math.floor(distMoved / 15), 3);
+
+            for(let i=0; i<spawnCount; i++) {
+                particles.push(new FumeParticle(mouse.targetX, mouse.targetY));
+            }
+
+            lastMouse.x = e.clientX;
+            lastMouse.y = e.clientY;
+        });
+
+        // Store all text canvases and their data
+        const textCanvases = [];
+
+        function resizeTextCanvas(canvas, container) {
+            const dpr = window.devicePixelRatio || 1;
+            const vw = window.innerWidth;
+            const maxWidth = vw < 768 ? vw - 48 : vw < 900 ? vw - 80 : container.clientWidth;
+            canvas.width = maxWidth * dpr;
+            canvas.height = 200 * dpr;
+            canvas.style.width = `${maxWidth}px`;
+            canvas.style.height = `200px`;
+        }
+
+        function renderTextOnCanvas(ctx, canvas, text, containerRect) {
+            const dpr = window.devicePixelRatio || 1;
+            const vw = window.innerWidth;
+            const isMobile = vw < 768;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const fontSize = getResponsiveFontSize();
+            const lineHeight = getResponsiveLineHeight();
+            const textFont = `300 ${fontSize}px ${FONT_FAMILY}`;
+
+            if (isMobile) {
+                // Static text rendering on mobile - no animation
+                if (text.prepared) {
+                    ctx.font = textFont;
+                    ctx.fillStyle = '#f4f4f0';
+                    ctx.textBaseline = 'top';
+
+                    let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+                    let currentY = 0;
+                    const maxColWidth = canvas.width / dpr - (PADDING * 2);
+
+                    while (true) {
+                        let availableWidth = Math.max(30, maxColWidth);
+                        const line = pretextLayoutNextLine(text.prepared, cursor, availableWidth);
+                        if (line === null) break;
+                        ctx.fillText(line.text, PADDING, currentY);
+                        cursor = line.end;
+                        currentY += lineHeight;
+                    }
+                }
+                return;
+            }
+
+            // Desktop animation code
+            const smokeRadius = getResponsiveSmokeRadius();
+
+            const cursorOverText = containerRect &&
+                mouse.x >= containerRect.left &&
+                mouse.x <= containerRect.right &&
+                mouse.y >= containerRect.top &&
+                mouse.y <= containerRect.bottom;
+
+            if (cursorOverText) {
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.update(mouseVelocity.x, mouseVelocity.y);
+                    p.draw(ctx);
+                    if (p.life <= 0) particles.splice(i, 1);
+                }
+            } else {
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.update(mouseVelocity.x, mouseVelocity.y);
+                    if (p.life <= 0) particles.splice(i, 1);
+                }
+            }
+
+            if (text.prepared) {
+                ctx.font = textFont;
+                ctx.fillStyle = '#f4f4f0';
+                ctx.textBaseline = 'top';
+
+                let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+                let currentY = 0;
+
+                const canvasCSSWidth = canvas.width / dpr;
+                const maxColWidth = canvasCSSWidth - (PADDING * 2);
+
+                while (true) {
+                    const lineCenterY = (currentY + (containerRect?.top || 0)) + (lineHeight / 2);
+                    const dy = Math.abs(lineCenterY - mouse.y);
+
+                    let availableWidth = maxColWidth;
+                    let startX = PADDING;
+
+                    if (cursorOverText && dy < smokeRadius) {
+                        const dx = Math.sqrt(Math.pow(smokeRadius, 2) - Math.pow(dy, 2));
+                        const cursorXInCanvas = mouse.x - (containerRect?.left || 0);
+
+                        if (mouse.x < (containerRect?.left || 0) + canvasCSSWidth / 2) {
+                            const obstacleRightEdge = cursorXInCanvas + dx;
+                            if (obstacleRightEdge > PADDING) {
+                                startX = Math.max(PADDING, obstacleRightEdge);
+                                availableWidth = canvasCSSWidth - startX - PADDING;
+                            }
+                        } else {
+                            const obstacleLeftEdge = cursorXInCanvas - dx;
+                            if (obstacleLeftEdge < canvasCSSWidth - PADDING) {
+                                availableWidth = obstacleLeftEdge - PADDING;
+                            }
+                        }
+                    }
+
+                    availableWidth = Math.max(30, availableWidth);
+                    const line = pretextLayoutNextLine(text.prepared, cursor, availableWidth);
+
+                    if (line === null) break;
+
+                    ctx.fillText(line.text, startX, currentY);
+
+                    cursor = line.end;
+                    currentY += lineHeight;
+                }
+            }
+        }
+
+        async function init() {
+            await document.fonts.ready;
+
+            try {
+                const module = await import('https://esm.sh/@chenglou/pretext@latest');
+                pretextPrepareWithSegments = module.prepareWithSegments;
+                pretextLayoutNextLine = module.layoutNextLine;
+
+                const fontSize = getResponsiveFontSize();
+                const textFont = `300 ${fontSize}px ${FONT_FAMILY}`;
+
+                const introContainer = document.getElementById('intro-text-container');
+                const introCanvas = document.getElementById('text-canvas');
+                if (introContainer && introCanvas) {
+                    const introCtx = introCanvas.getContext('2d');
+                    resizeTextCanvas(introCanvas, introContainer);
+                    const prepared = pretextPrepareWithSegments(introText, textFont);
+                    textCanvases.push({ canvas: introCanvas, ctx: introCtx, text: { prepared }, container: introContainer });
+                }
+
+                const blogContainers = document.querySelectorAll('.blog-text-container');
+                blogContainers.forEach((container, index) => {
+                    const canvas = container.querySelector('.blog-text-canvas');
+                    if (canvas && blogTexts[index]) {
+                        const ctx = canvas.getContext('2d');
+                        resizeTextCanvas(canvas, container);
+                        const prepared = pretextPrepareWithSegments(blogTexts[index], textFont);
+                        textCanvases.push({ canvas, ctx, text: { prepared }, container });
+                    }
+                });
+
+                // Hide fallback text and display canvas once Pretext initializes
+                document.querySelectorAll('#intro-text-container, .blog-text-container').forEach(c => {
+                    const fallback = c.querySelector('.text-fallback');
+                    if (fallback) fallback.style.display = 'none';
+                    const canvas = c.querySelector('canvas');
+                    if (canvas) canvas.style.display = 'block';
+                });
+
+                render();
+            } catch (err) {
+                console.warn("Pretext CDN blocked or failed. Using standard HTML text fallback.", err);
+                document.querySelectorAll('#intro-text-container, .blog-text-container').forEach(c => {
+                    const fallback = c.querySelector('.text-fallback');
+                    if (fallback) fallback.style.display = 'block';
+                    const canvas = c.querySelector('canvas');
+                    if (canvas) canvas.style.display = 'none';
+                });
+            }
+        }
+
+        function render() {
+            const vw = window.innerWidth;
+            const isMobile = vw < 768;
+            
+            mouse.x += (mouse.targetX - mouse.x) * 0.1;
+            mouse.y += (mouse.targetY - mouse.y) * 0.1;
+
+            // Only spawn particles on desktop
+            if (!isMobile && Math.random() > 0.7) {
+                particles.push(new FumeParticle(mouse.x, mouse.y));
+            }
+
+            // Render all text canvases
+            textCanvases.forEach(item => {
+                const containerRect = item.container.getBoundingClientRect();
+                renderTextOnCanvas(item.ctx, item.canvas, item.text, containerRect);
+            });
+
+            requestAnimationFrame(render);
+        }
+
+        init();
+
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const fontSize = getResponsiveFontSize();
+                const textFont = `300 ${fontSize}px ${FONT_FAMILY}`;
+                
+                textCanvases.forEach(item => {
+                    resizeTextCanvas(item.canvas, item.container);
+                    if (item.canvas.id === 'text-canvas') {
+                        item.text.prepared = pretextPrepareWithSegments(introText, textFont);
+                    } else {
+                        const index = Array.from(document.querySelectorAll('.blog-text-canvas')).indexOf(item.canvas);
+                        if (index >= 0 && blogTexts[index]) {
+                            item.text.prepared = pretextPrepareWithSegments(blogTexts[index], textFont);
+                        }
+                    }
+                });
+            }, 250);
+        });
+    </script>
+
+    <script>
+        // === Custom Cursor Initialization with Safe Fallback ===
+        const cursor = document.getElementById('cursor');
+        let mouseX = 0, mouseY = 0;
+        let cursorX = 0, cursorY = 0;
+        let cursorInitialized = false;
+
+        // Only hide system cursor and show custom cursor when mouse is active and confirmed
+        if (window.matchMedia('(pointer: fine)').matches) {
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                if (!cursorInitialized) {
+                    cursorInitialized = true;
+                    document.body.classList.add('custom-cursor-active');
+                    if (cursor) cursor.style.display = 'block';
+                }
+            });
+
+            function animateCursor() {
+                cursorX += (mouseX - cursorX) * 0.2;
+                cursorY += (mouseY - cursorY) * 0.2;
+                if (cursor) {
+                    cursor.style.left = `${cursorX}px`;
+                    cursor.style.top = `${cursorY}px`;
+                }
+                requestAnimationFrame(animateCursor);
+            }
+            animateCursor();
+        } else {
+            if (cursor) cursor.style.display = 'none';
+        }
+
+        // === Fix Scroll-Lock Dead Zone on Desktop ===
+        // Forward wheel events from the left branding pane to the right scroll pane
+        const paneLeft = document.querySelector('.pane-left');
+        const scrollPane = document.getElementById('scroll-pane');
+        if (paneLeft && scrollPane) {
+            paneLeft.addEventListener('wheel', (e) => {
+                scrollPane.scrollTop += e.deltaY;
+            }, { passive: true });
+        }
+
+        const interactives = document.querySelectorAll('.interactive');
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('active'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+        });
+
+        const sections = document.querySelectorAll('.observe-section');
+        const bgImages = document.querySelectorAll('.bg-img');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        const observerOptions = {
+            root: document.getElementById('scroll-pane'),
+            threshold: 0.2 
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const activeId = entry.target.id;
+
+                    bgImages.forEach(img => {
+                        if (img.getAttribute('data-img') === activeId) {
+                            img.classList.add('active');
+                        } else {
+                            img.classList.remove('active');
+                        }
+                    });
+
+                    navLinks.forEach(link => {
+                        if (link.getAttribute('href') === `#${activeId}`) {
+                            link.classList.add('active-link');
+                        } else {
+                            link.classList.remove('active-link');
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                const scrollPane = document.getElementById('scroll-pane');
+                
+                scrollPane.scrollTo({
+                    top: targetElement.offsetTop,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+    </script>
+</body>
+</html>
